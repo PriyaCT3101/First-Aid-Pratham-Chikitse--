@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pratham Chikitse - Live App Demo</title>
+    <title>Pratham Chikitse - Full App Simulator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -16,366 +16,294 @@
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #2c3e50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #1a252f;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* Phone Frame */
         .phone-container {
-            width: 375px;
-            height: 750px;
-            background: #000;
-            border-radius: 40px;
-            padding: 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-            border: 2px solid #444;
+            width: 360px; height: 740px;
+            background: #000; border-radius: 45px;
+            padding: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            position: relative; border: 2px solid #333;
         }
 
         .screen {
-            width: 100%;
-            height: 100%;
-            background: var(--surface);
-            border-radius: 30px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            width: 100%; height: 100%;
+            background: var(--surface); border-radius: 35px;
+            overflow: hidden; display: flex; flex-direction: column;
             position: relative;
         }
 
-        /* App Styles */
-        .header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Nav & Header */
+        .status-bar {
+            height: 25px; padding: 5px 25px;
+            display: flex; justify-content: space-between; font-size: 12px;
+        }
+
+        .app-header {
+            padding: 15px 20px; display: flex;
+            justify-content: space-between; align-items: center;
             background: var(--white);
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 20px;
-            color: var(--ink);
-        }
+        .app-header h1 { margin: 0; font-size: 20px; color: var(--brand-green); font-weight: 800; }
 
         .lang-btn {
-            background: var(--white);
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            color: var(--brand-green);
-            cursor: pointer;
+            background: #e8f5e9; border: none; padding: 6px 12px;
+            border-radius: 20px; font-weight: bold; color: var(--brand-green);
+            cursor: pointer; font-size: 11px;
         }
 
-        .search-bar {
-            padding: 0 20px 15px;
-            background: var(--white);
+        /* Dashboard */
+        .search-area { padding: 0 20px 15px; background: var(--white); }
+        .search-area input {
+            width: 100%; padding: 12px 15px; border-radius: 12px;
+            border: 1px solid #eee; background: #f5f7f6; box-sizing: border-box;
         }
 
-        .search-bar input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-            background: #f1f3f4;
-            box-sizing: border-box;
-            outline: none;
+        .scroll-content { flex: 1; overflow-y: auto; padding: 15px 20px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .card {
+            background: var(--white); border-radius: 18px; padding: 20px 10px;
+            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            cursor: pointer; transition: all 0.2s; border: 1px solid #f0f0f0;
+        }
+        .card:hover { transform: translateY(-2px); border-color: var(--brand-green); }
+
+        .card i { font-size: 32px; color: var(--brand-green); margin-bottom: 12px; display: block; }
+        .card b { font-size: 14px; color: var(--ink); }
+        .card .sev {
+            font-size: 10px; padding: 2px 8px; border-radius: 10px;
+            background: #f0f0f0; margin-top: 8px; display: inline-block;
         }
 
-        .content-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 20px;
+        .footer-btns { padding: 15px 20px; background: var(--white); box-shadow: 0 -5px 15px rgba(0,0,0,0.02); }
+        .btn {
+            width: 100%; padding: 16px; border-radius: 15px;
+            border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
+        .btn-hosp { background: var(--brand-green); color: white; }
+        .btn-sos { background: var(--danger); color: white; animation: pulse 2s infinite; }
 
-        .case-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+        /* Overlays */
+        .overlay {
+            position: absolute; top: 0; left: 100%;
+            width: 100%; height: 100%; background: var(--surface);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100; display: flex; flex-direction: column;
         }
+        .overlay.active { left: 0; }
 
-        .case-card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: transform 0.1s;
+        .ov-header { padding: 20px; display: flex; align-items: center; gap: 15px; background: white; }
+        .ov-header h2 { margin: 0; font-size: 18px; }
+        .back { cursor: pointer; font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+
+        /* Hospital Details */
+        .hosp-item {
+            background: white; padding: 15px; border-radius: 15px;
+            margin-bottom: 15px; border: 1px solid #f0f0f0;
         }
-
-        .case-card:active { transform: scale(0.95); }
-
-        .case-icon {
-            font-size: 30px;
-            color: var(--brand-green);
-            margin-bottom: 10px;
-        }
-
-        .case-name {
-            font-weight: bold;
-            font-size: 14px;
-            display: block;
-        }
-
-        .severity {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: #f0f0f0;
-            margin-top: 5px;
-            display: inline-block;
-        }
-
-        .severity.critical { background: #fee; color: var(--danger); }
-
-        .bottom-actions {
-            padding: 15px 20px;
-            background: var(--white);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-full {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .btn-hospitals { background: var(--brand-green); color: white; }
-        .btn-sos { background: var(--danger); color: white; }
-
-        /* Detail View */
-        .detail-view {
-            position: absolute;
-            top: 0; left: 100%;
-            width: 100%; height: 100%;
-            background: var(--surface);
-            transition: left 0.3s;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-view.active { left: 0; }
-
-        .back-btn {
-            padding: 20px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* Hospital List */
-        .hospital-item {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .h-name { font-weight: bold; font-size: 16px; margin: 0; }
-        .h-addr { color: var(--muted); font-size: 12px; margin: 5px 0; }
-        .h-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .hosp-item h3 { margin: 0; font-size: 16px; color: var(--ink); }
+        .hosp-item p { margin: 5px 0; font-size: 12px; color: var(--muted); }
+        .hosp-actions { display: flex; gap: 10px; margin-top: 12px; }
         .h-btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
+            flex: 1; padding: 10px; border-radius: 10px; border: none;
+            font-size: 11px; font-weight: bold; cursor: pointer;
         }
-        .h-call { background: #e8f5e9; color: var(--brand-green); }
-        .h-nav { background: #e3f2fd; color: #1976d2; }
+        .h-call { background: #E8F5E9; color: var(--brand-green); }
+        .h-nav { background: #E3F2FD; color: #1976D2; }
 
-        /* Instructions Overlay */
-        .instruction-box {
-            background: white;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 20px;
-            flex: 1;
-            text-align: center;
+        /* Step Details */
+        .step-pager { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .step-card {
+            background: white; width: 100%; border-radius: 20px;
+            padding: 30px 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
+        .do-badge { background: var(--brand-green); color: white; padding: 4px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .step-img { font-size: 80px; color: var(--brand-green); margin: 30px 0; }
 
-        .badge-do {
-            background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); opacity: 0.9; }
+            100% { transform: scale(1); }
         }
 
-        .desktop-info {
-            position: fixed;
-            left: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            max-width: 400px;
-        }
-
-        @media (max-width: 900px) {
-            .desktop-info { display: none; }
-        }
+        .side-info { position: fixed; left: 40px; color: white; max-width: 300px; }
+        @media (max-width: 800px) { .side-info { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="desktop-info">
-        <h1 style="font-size: 40px;">Pratham Chikitse <span style="font-size: 20px; opacity: 0.7;">Live Preview</span></h1>
-        <p>This is a <b>fully functional web simulator</b> of your Android application. You can switch languages, search for emergencies, view step-by-step guides, and browse the hospital directory.</p>
-        <p><i class="fas fa-info-circle"></i> Click the phone screen to interact.</p>
-        <div style="margin-top: 30px;">
-            <a href="#" onclick="alert('Downloading APK...')" style="color: #fff; text-decoration: none; border: 1px solid #fff; padding: 10px 20px; border-radius: 5px;">Download App Source</a>
-        </div>
+    <div class="side-info">
+        <h1 style="font-size: 32px; color: #4ade80;">Pratham Chikitse</h1>
+        <p>MindMatrix Internship Project</p>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 2;">
+            <li><i class="fas fa-check-circle"></i> Live Search Filtering</li>
+            <li><i class="fas fa-check-circle"></i> Real-time Language Swap</li>
+            <li><i class="fas fa-check-circle"></i> Functional Hospital List</li>
+            <li><i class="fas fa-check-circle"></i> Emergency Dial Simulation</li>
+        </ul>
     </div>
 
     <div class="phone-container">
         <div class="screen">
-            <!-- Main Dashboard -->
-            <div class="header">
-                <h1 id="app-title">Emergency First Aid</h1>
+            <div class="status-bar">
+                <span>10:45</span>
+                <div>
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-full"></i>
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div class="app-header">
+                <h1 id="title">Emergency Guide</h1>
                 <button class="lang-btn" onclick="toggleLang()" id="lang-btn">ENGLISH</button>
             </div>
 
-            <div class="search-bar">
-                <input type="text" id="search-input" placeholder="Search emergency (e.g. CPR)" onkeyup="filterCases()">
+            <div class="search-area">
+                <input type="text" id="search" placeholder="Search (e.g. CPR)" onkeyup="filter()">
             </div>
 
-            <div class="content-scroll" id="main-scroll">
-                <div class="case-grid" id="case-grid">
-                    <!-- Cases injected by JS -->
+            <div class="scroll-content">
+                <div class="grid" id="grid"></div>
+            </div>
+
+            <div class="footer-btns">
+                <button class="btn btn-hosp" onclick="openOverlay('hospital-ov')">
+                    <i class="fas fa-hospital"></i> <span id="btn-h-text">NEARBY HOSPITALS</span>
+                </button>
+                <button class="btn btn-sos" onclick="triggerSOS()">
+                    <i class="fas fa-phone-alt"></i> SOS PANIC BUTTON
+                </button>
+            </div>
+
+            <!-- HOSPITAL OVERLAY -->
+            <div class="overlay" id="hospital-ov">
+                <div class="ov-header">
+                    <div class="back" onclick="closeOverlay('hospital-ov')"><i class="fas fa-arrow-left"></i></div>
+                    <h2 id="h-title">Nearby Hospitals</h2>
                 </div>
+                <div class="scroll-content" id="h-list"></div>
             </div>
 
-            <div class="bottom-actions">
-                <button class="btn-full btn-hospitals" onclick="showHospitals()" id="btn-hospitals">NEARBY HOSPITALS</button>
-                <button class="btn-full btn-sos" onclick="alert('SOS Alert Sent!')">SOS - PANIC BUTTON</button>
-            </div>
-
-            <!-- Detail View Overlay -->
-            <div class="detail-view" id="detail-view">
-                <div class="back-btn" onclick="closeDetail()"><i class="fas fa-arrow-left"></i></div>
-                <div class="content-scroll">
-                    <h2 id="detail-name" style="margin: 0 0 10px;"></h2>
-                    <div id="steps-container"></div>
+            <!-- DETAIL OVERLAY -->
+            <div class="overlay" id="detail-ov">
+                <div class="ov-header">
+                    <div class="back" onclick="closeOverlay('detail-ov')"><i class="fas fa-arrow-left"></i></div>
+                    <h2 id="d-title">Instruction</h2>
                 </div>
-            </div>
-
-            <!-- Hospital View Overlay -->
-            <div class="detail-view" id="hospital-view">
-                <div class="back-btn" onclick="closeHospitals()"><i class="fas fa-arrow-left"></i> <span id="h-title">Nearby Hospitals</span></div>
-                <div class="content-scroll" id="hospital-list">
-                    <!-- Hospitals injected by JS -->
+                <div class="step-pager">
+                    <div class="step-card">
+                        <span class="do-badge">DO</span>
+                        <div class="step-img"><i id="d-icon" class="fas"></i></div>
+                        <p id="d-instr" style="font-size: 18px; font-weight: 500;"></p>
+                        <button class="btn" style="background: #f0f0f0; margin-top: 20px;" onclick="speak()">
+                            <i class="fas fa-volume-up"></i> LISTEN GUIDE
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentLang = 'en';
-        const cases = [
-            { id: 1, nameEn: "Burns", nameKn: "ಸುಟ್ಟ ಗಾಯ", icon: "fire", severity: "High" },
-            { id: 2, nameEn: "Severe Bleeding", nameKn: "ತೀವ್ರ ರಕ್ತಸ್ರಾವ", icon: "tint", severity: "Critical" },
-            { id: 3, nameEn: "Choking", nameKn: "ಉಸಿರುಕಟ್ಟುವಿಕೆ", icon: "lungs", severity: "Critical" },
-            { id: 4, nameEn: "Fracture", nameKn: "ಎಲುಬು ಮುರಿತ", icon: "bone", severity: "Medium" },
-            { id: 6, nameEn: "Cardiac Arrest", nameKn: "ಹೃದಯಸ್ತಂಭನ", icon: "heartbeat", severity: "Critical" }
+        let lang = 'en';
+        const data = [
+            { name: "Burns", kn: "ಸುಟ್ಟ ಗಾಯ", icon: "fire", sev: "High", msg: "Stop the burning. Cool the area under running water for 20 minutes.", kn_msg: "ಸುಡುವುದನ್ನು ತಡೆಯಿರಿ. ಸುಟ್ಟ ಭಾಗವನ್ನು 20 ನಿಮಿಷಗಳ ಕಾಲ ತಣ್ಣೀರಿನಲ್ಲಿ ತಂಪಾಗಿಸಿ." },
+            { name: "Severe Bleeding", kn: "ತೀವ್ರ ರಕ್ತಸ್ರಾವ", icon: "tint", sev: "Critical", msg: "Apply firm, direct pressure on the wound using a clean cloth.", kn_msg: "ಸ್ವಚ್ಛ ಬಟ್ಟೆಯನ್ನು ಬಳಸಿ ಗಾಯದ ಮೇಲೆ ನೇರವಾಗಿ ಮತ್ತು ದೃಢವಾಗಿ ಒತ್ತಡ ಹಾಕಿ." },
+            { name: "Choking", kn: "ಉಸಿರುಕಟ್ಟುವಿಕೆ", icon: "lungs", sev: "Critical", msg: "Give 5 back blows followed by 5 abdominal thrusts.", kn_msg: "5 ಬೆನ್ನಿನ ಹೊಡೆತಗಳು ಮತ್ತು 5 ಹೊಟ್ಟೆಯ ಒತ್ತಡಗಳನ್ನು ನೀಡಿ." },
+            { name: "Fracture", kn: "ಎಲುಬು ಮುರಿತ", icon: "bone", sev: "Medium", msg: "Immobilize the area. Do not try to realign the bone.", kn_msg: "ಭಾಗವನ್ನು ಚಲಿಸದಂತೆ ಇಡಿ. ಎಲುಬನ್ನು ಸರಿಪಡಿಸಲು ಪ್ರಯತ್ನಿಸಬೇಡಿ." },
+            { name: "Cardiac Arrest", kn: "ಹೃದಯಸ್ತಂಭನ", icon: "heartbeat", sev: "Critical", msg: "Start CPR immediately. Push hard and fast in the center of the chest.", kn_msg: "ತಕ್ಷಣ ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ. ಎದೆಯ ಮಧ್ಯಭಾಗದಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ಮತ್ತು ವೇಗವಾಗಿ ಒತ್ತಿರಿ." }
         ];
 
         const hospitals = [
-            { name: "Sarji Hospital", phone: "08182-405505", addr: "R.M.R. Road, Park Extension" },
-            { name: "Max Hospital (MaAx)", phone: "08182-269400", addr: "RMR Road, Durgigudi" },
-            { name: "Metro Hospital", phone: "078292-90303", addr: "Savalanga Road, Jayanagar" },
-            { name: "Govt. Meggan Hospital", phone: "08182-271566", addr: "Sagar Road, Shivamogga" }
+            { name: "Sarji Hospital", ph: "08182-405505", ad: "R.M.R. Road, Shivamogga" },
+            { name: "Max Hospital", ph: "08182-269400", ad: "Durgigudi, Shivamogga" },
+            { name: "Metro Hospital", ph: "078292-90303", ad: "Savalanga Road, Shivamogga" },
+            { name: "Govt. Meggan Hospital", ph: "08182-271566", ad: "Sagar Road, Shivamogga" }
         ];
 
-        function init() {
-            renderCases(cases);
-        }
-
-        function renderCases(items) {
-            const grid = document.getElementById('case-grid');
-            grid.innerHTML = '';
-            items.forEach(c => {
-                const name = currentLang === 'en' ? c.nameEn : c.nameKn;
-                const card = document.createElement('div');
-                card.className = 'case-card';
-                card.onclick = () => openDetail(c);
-                card.innerHTML = `
-                    <div class="case-icon"><i class="fas fa-${c.icon}"></i></div>
-                    <span class="case-name">${name}</span>
-                    <span class="severity ${c.severity.toLowerCase()}">${c.severity}</span>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function filterCases() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = cases.filter(c =>
-                c.nameEn.toLowerCase().includes(query) || c.nameKn.includes(query)
-            );
-            renderCases(filtered);
-        }
-
         function toggleLang() {
-            currentLang = currentLang === 'en' ? 'kn' : 'en';
-            document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'ENGLISH' : 'ಕನ್ನಡ';
-            document.getElementById('app-title').innerText = currentLang === 'en' ? 'Emergency First Aid' : 'ತುರ್ತು ಪ್ರಥಮ ಚಿಕಿತ್ಸೆ';
-            document.getElementById('btn-hospitals').innerText = currentLang === 'en' ? 'NEARBY HOSPITALS' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
-            document.getElementById('h-title').innerText = currentLang === 'en' ? 'Nearby Hospitals' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
-            renderCases(cases);
+            lang = lang === 'en' ? 'kn' : 'en';
+            document.getElementById('lang-btn').innerText = lang === 'en' ? 'ENGLISH' : 'ಕನ್ನಡ';
+            document.getElementById('title').innerText = lang === 'en' ? 'Emergency Guide' : 'ತುರ್ತು ಮಾರ್ಗದರ್ಶಿ';
+            document.getElementById('btn-h-text').innerText = lang === 'en' ? 'NEARBY HOSPITALS' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
+            document.getElementById('h-title').innerText = lang === 'en' ? 'Nearby Hospitals' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
+            render();
         }
 
-        function openDetail(c) {
-            document.getElementById('detail-name').innerText = currentLang === 'en' ? c.nameEn : c.nameKn;
-            document.getElementById('detail-view').classList.add('active');
-            const container = document.getElementById('steps-container');
-            container.innerHTML = `
-                <div class="instruction-box">
-                    <span class="badge-do">DO</span>
-                    <p style="font-size: 18px; margin-top: 20px;">${currentLang === 'en' ? 'Apply immediate pressure to the wound with a clean cloth.' : 'ಸ್ವಚ್ಛ ಬಟ್ಟೆಯಿಂದ ಗಾಯದ ಮೇಲೆ ತಕ್ಷಣ ಒತ್ತಡ ಹಾಕಿ.'}</p>
-                    <button class="lang-btn" style="margin-top: 20px;"><i class="fas fa-volume-up"></i> LISTEN</button>
-                </div>
-            `;
-        }
-
-        function closeDetail() { document.getElementById('detail-view').classList.remove('active'); }
-
-        function showHospitals() {
-            document.getElementById('hospital-view').classList.add('active');
-            const list = document.getElementById('hospital-list');
-            list.innerHTML = '';
-            hospitals.forEach(h => {
-                const item = document.createElement('div');
-                item.className = 'hospital-item';
-                item.innerHTML = `
-                    <p class="h-name">${h.name}</p>
-                    <p class="h-addr">${h.addr}</p>
-                    <div class="h-actions">
-                        <button class="h-btn h-call" onclick="alert('Calling ${h.phone}')"><i class="fas fa-phone"></i> CALL</button>
-                        <button class="h-btn h-nav" onclick="alert('Opening Maps to ${h.name}')"><i class="fas fa-directions"></i> NAVIGATE</button>
+        function render(items = data) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            items.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card" onclick="showDetail('${item.name}')">
+                        <i class="fas fa-${item.icon}"></i>
+                        <b>${lang === 'en' ? item.name : item.kn}</b><br>
+                        <span class="sev" style="${item.sev==='Critical'?'color:red':''}">${item.sev}</span>
                     </div>
                 `;
-                list.appendChild(item);
             });
         }
 
-        function closeHospitals() { document.getElementById('hospital-view').classList.remove('active'); }
+        function filter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = data.filter(i => i.name.toLowerCase().includes(q) || i.kn.includes(q));
+            render(filtered);
+        }
 
-        init();
+        function showDetail(name) {
+            const item = data.find(i => i.name === name);
+            document.getElementById('d-title').innerText = lang === 'en' ? item.name : item.kn;
+            document.getElementById('d-icon').className = `fas fa-${item.icon}`;
+            document.getElementById('d-instr').innerText = lang === 'en' ? item.msg : item.kn_msg;
+            openOverlay('detail-ov');
+        }
+
+        function triggerSOS() {
+            const num = "108";
+            if(confirm(`EMERGENCY: Do you want to call ${num} and send location to emergency contacts?`)) {
+                alert("Location Shared Successfully! Dialing 108...");
+            }
+        }
+
+        function openOverlay(id) {
+            if(id === 'hospital-ov') {
+                const list = document.getElementById('h-list');
+                list.innerHTML = '';
+                hospitals.forEach(h => {
+                    list.innerHTML += `
+                        <div class="hosp-item">
+                            <h3>${h.name}</h3>
+                            <p>${h.ad}</p>
+                            <div class="hosp-actions">
+                                <button class="h-btn h-call" onclick="alert('Calling ${h.ph}')">CALL ${h.ph}</button>
+                                <button class="h-btn h-nav" onclick="alert('Navigating to ${h.name}')">NAVIGATE</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById(id).classList.add('active');
+        }
+        function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
+
+        function speak() {
+            const text = document.getElementById('d-instr').innerText;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang === 'en' ? 'en-US' : 'hi-IN'; // Kannada browser support varies, falling back to Hindi for rhythm or English
+            window.speechSynthesis.speak(utterance);
+        }
+
+        render();
     </script>
 </body>
 </html>
