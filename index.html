@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pratham Chikitse - Multi-Step Emergency Guide</title>
+    <title>Pratham Chikitse - Full Interactive App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -45,7 +45,7 @@
         .search-area { padding: 15px 20px; background: var(--white); }
         .search-area input { width: 100%; padding: 14px 18px; border-radius: 15px; border: 1px solid #ddd; background: #f9fbfc; font-size: 16px; outline: none; }
 
-        .scroll-area { flex: 1; overflow-y: auto; padding: 10px 20px 120px; }
+        .scroll-area { flex: 1; overflow-y: auto; padding: 10px 20px 140px; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: var(--white); border-radius: 20px; padding: 25px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; }
@@ -65,23 +65,29 @@
         .ov-header h2 { margin: 0; font-size: 20px; flex: 1; }
         .back-btn { font-size: 24px; cursor: pointer; padding: 5px; }
 
-        /* STEP VIEWER STYLES */
+        /* STEP VIEWER */
         .step-viewer { flex: 1; display: flex; flex-direction: column; padding: 20px; align-items: center; justify-content: center; }
         .instr-card { background: white; width: 100%; max-width: 400px; padding: 40px 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; position: relative; }
         .do-badge { background: var(--brand-green); color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 12px; margin-bottom: 20px; display: inline-block; }
         .step-num { font-size: 14px; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
         .step-icon { font-size: 80px; color: var(--brand-green); margin: 30px 0; }
         .step-text { font-size: 20px; font-weight: 500; line-height: 1.5; min-height: 120px; display: flex; align-items: center; justify-content: center; }
-
         .step-nav { display: flex; gap: 15px; width: 100%; margin-top: 30px; }
         .nav-btn { flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; background: #eee; }
         .nav-btn.primary { background: var(--brand-green); color: white; }
-
         .speak-btn { background: #f3f4f6; padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-top: 20px; }
         .speak-btn.playing { background: #fee2e2; color: var(--danger); }
 
+        /* PROFILE */
+        .profile-card { background: white; padding: 30px 20px; border-radius: 25px; margin: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .profile-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f5f5f5; }
+        .profile-row:last-child { border: none; }
+        .p-label { color: var(--muted); font-size: 13px; font-weight: 600; }
+        .p-val { font-weight: 700; color: var(--ink); }
+        .edit-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 5px; display: none; }
+
         /* HOSPITAL LIST */
-        .hosp-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #f0f0f0; }
+        .hosp-card { background: white; padding: 20px; border-radius: 20px; margin: 0 20px 15px; border: 1px solid #f0f0f0; }
         .hosp-actions { display: flex; gap: 12px; margin-top: 15px; }
         .h-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; }
         .h-call { background: #ecfdf5; color: var(--brand-green); }
@@ -145,12 +151,40 @@
     </div>
 
     <div class="overlay" id="ov-profile">
-        <div class="ov-header"><div class="back-btn" onclick="closeOverlay('ov-profile')"><i class="fas fa-arrow-left"></i></div><h2>User Profile</h2></div>
-        <div class="scroll-area" style="text-align: center; padding-top: 40px;">
-            <i class="fas fa-user-circle" style="font-size: 100px; color: #cbd5e1; margin-bottom: 20px;"></i>
-            <h3>MindMatrix Intern</h3>
-            <p style="color:var(--muted)">Blood Group: O+</p>
-            <button class="btn" style="background:#f1f5f9; color:var(--danger); margin-top:40px;" onclick="alert('Logged Out')">LOGOUT</button>
+        <div class="ov-header"><div class="back-btn" onclick="closeOverlay('ov-profile')"><i class="fas fa-arrow-left"></i></div><h2 id="txt-p-title">User Profile</h2></div>
+        <div class="scroll-area">
+            <div style="text-align: center; padding: 30px 0;">
+                <div style="width: 100px; height: 100px; background: #e2e8f0; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #94a3b8;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="p-display-name">MindMatrix Intern</h3>
+            </div>
+            <div class="profile-card">
+                <div class="profile-row">
+                    <span class="p-label">NAME</span>
+                    <span class="p-val" id="val-name">MindMatrix Intern</span>
+                    <input type="text" id="edit-name" class="edit-input">
+                </div>
+                <div class="profile-row">
+                    <span class="p-label">PHONE</span>
+                    <span class="p-val" id="val-phone">+91 9876543210</span>
+                    <input type="text" id="edit-phone" class="edit-input">
+                </div>
+                <div class="profile-row">
+                    <span class="p-label">EMERGENCY CONTACT</span>
+                    <span class="p-val" id="val-emergency">108</span>
+                    <input type="text" id="edit-emergency" class="edit-input">
+                </div>
+                <div class="profile-row">
+                    <span class="p-label">BLOOD GROUP</span>
+                    <span class="p-val" id="val-blood">O+</span>
+                    <input type="text" id="edit-blood" class="edit-input">
+                </div>
+            </div>
+            <div style="padding: 0 20px;">
+                <button class="btn" style="background: var(--brand-green); color: white;" id="btn-edit-profile" onclick="toggleEditProfile()">EDIT PROFILE</button>
+                <button class="btn" style="background:#f1f5f9; color:var(--danger); margin-top:15px;" onclick="alert('Logged Out')">LOGOUT</button>
+            </div>
         </div>
     </div>
 </div>
@@ -160,6 +194,7 @@
     let currentCase = null;
     let currentStepIdx = 0;
     let isSpeaking = false;
+    let isEditing = false;
 
     const cases = [
         { id: 1, en: "Burns", kn: "ಸುಟ್ಟ ಗಾಯ", icon: "fire", sev: "High",
@@ -169,18 +204,36 @@
               { en: "Cover the burn loosely with plastic wrap.", kn: "ಗಾಯವನ್ನು ಪ್ಲಾಸ್ಟಿಕ್ ಹೊದಿಕೆಯಿಂದ ಸಡಿಲವಾಗಿ ಮುಚ್ಚಿ." }
           ]
         },
-        { id: 2, en: "Bleeding", kn: "ರಕ್ತಸ್ರಾವ", icon: "tint", sev: "Critical",
+        { id: 2, en: "Severe Bleeding", kn: "ತೀವ್ರ ರಕ್ತಸ್ರಾವ", icon: "tint", sev: "Critical",
           steps: [
               { en: "Apply firm, direct pressure on the wound.", kn: "ಗಾಯದ ಮೇಲೆ ನೇರವಾಗಿ ಮತ್ತು ದೃಢವಾಗಿ ಒತ್ತಡ ಹಾಕಿ." },
               { en: "Maintain pressure for at least 10 minutes.", kn: "ಕನಿಷ್ಠ 10 ನಿಮಿಷಗಳ ಕಾಲ ಒತ್ತಡವನ್ನು ಮುಂದುವರಿಸಿ." },
               { en: "Elevate the injured limb above the heart.", kn: "ಗಾಯಗೊಂಡ ಅಂಗವನ್ನು ಹೃದಯಕ್ಕಿಂತ ಮೇಲೆ ಎತ್ತಿ ಹಿಡಿಯಿರಿ." }
           ]
         },
+        { id: 3, en: "Choking", kn: "ಉಸಿರುಕಟ್ಟುವಿಕೆ", icon: "lungs", sev: "Critical",
+          steps: [
+              { en: "Encourage them to cough if they can.", kn: "ಅವರು ಕೆಮ್ಮಲು ಸಾಧ್ಯವಾದರೆ ಕೆಮ್ಮಲು ಹೇಳಿ." },
+              { en: "Give 5 firm blows between shoulder blades.", kn: "ಭುಜದ ಎಲುಬುಗಳ ಮಧ್ಯೆ 5 ಬಾರಿ ದೃಢವಾಗಿ ಹೊಡೆಯಿರಿ." },
+              { en: "Give 5 abdominal thrusts above the navel.", kn: "ಹೊಕ್ಕುಳದ ಮೇಲೆ 5 ಬಾರಿ ಹೊಟ್ಟೆಯ ಮೇಲೆ ಒತ್ತಡ ಹಾಕಿ." }
+          ]
+        },
+        { id: 4, en: "Fracture", kn: "ಎಲುಬು ಮುರಿತ", icon: "bone", sev: "Medium",
+          steps: [
+              { en: "Immobilize the injured area immediately.", kn: "ಗಾಯಗೊಂಡ ಭಾಗವನ್ನು ತಕ್ಷಣ ಚಲಿಸದಂತೆ ಇಡಿ." },
+              { en: "Apply a cold compress to reduce swelling.", kn: "ನೋವು ಮತ್ತು ಊತ ಕಡಿಮೆ ಮಾಡಲು ತಂಪು ಪ್ಯಾಕ್ ಬಳಸಿ." }
+          ]
+        },
         { id: 5, en: "Cardiac Arrest", kn: "ಹೃದಯಸ್ತಂಭನ", icon: "heartbeat", sev: "Critical",
           steps: [
-              { en: "Check response and call for help immediately.", kn: "ತಕ್ಷಣ ಪ್ರತಿಕ್ರಿಯೆ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಸಹಾಯಕ್ಕಾಗಿ ಕರೆ ಮಾಡಿ." },
-              { en: "Start CPR: Push hard and fast in center of chest.", kn: "ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ: ಎದೆಯ ಮಧ್ಯಭಾಗದಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ಒತ್ತಿರಿ." },
-              { en: "Keep going until professional help arrives.", kn: "ಸಹಾಯ ಬರುವವರೆಗೆ ಸಿಪಿಆರ್ ಮುಂದುವರಿಸಿ." }
+              { en: "Check response and call 108 immediately.", kn: "ತಕ್ಷಣ ಪ್ರತಿಕ್ರಿಯೆ ಪರಿಶೀಲಿಸಿ ಮತ್ತು 108 ಗೆ ಕರೆ ಮಾಡಿ." },
+              { en: "Start CPR: Push hard and fast in center of chest.", kn: "ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ: ಎದೆಯ ಮಧ್ಯಭಾಗದಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ಒತ್ತಿರಿ." }
+          ]
+        },
+        { id: 6, en: "Seizure", kn: "ಅಪಸ್ಮಾರ", icon: "brain", sev: "High",
+          steps: [
+              { en: "Protect the head from hard objects.", kn: "ತಲೆಗೆ ಪೆಟ್ಟಾಗದಂತೆ ಗಟ್ಟಿಯಾದ ವಸ್ತುಗಳಿಂದ ರಕ್ಷಿಸಿ." },
+              { en: "Gently turn them onto their side after shaking.", kn: "ನಡುಕು ನಿಂತ ನಂತರ ಅವರನ್ನು ನಿಧಾನವಾಗಿ ಒಂದು ಬದಿಗೆ ತಿರುಗಿಸಿ." }
           ]
         }
     ];
@@ -189,7 +242,7 @@
         { name: "Sarji Hospital", ph: "08182-405505", ad: "R.M.R. Road, Shivamogga" },
         { name: "Max Hospital", ph: "08182-269400", ad: "Durgigudi, Shivamogga" },
         { name: "Metro Hospital", ph: "078292-90303", ad: "Savalanga Road, Shivamogga" },
-        { name: "Govt. Meggan", ph: "08182-271566", ad: "Sagar Road, Shivamogga" }
+        { name: "Govt. Meggan Hospital", ph: "08182-271566", ad: "Sagar Road, Shivamogga" }
     ];
 
     function init() {
@@ -200,8 +253,7 @@
     function updateClock() { const n = new Date(); document.getElementById('clock').innerText = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0'); }
 
     function renderGrid(items) {
-        const grid = document.getElementById('case-grid');
-        grid.innerHTML = '';
+        const grid = document.getElementById('case-grid'); grid.innerHTML = '';
         items.forEach(c => {
             grid.innerHTML += `<div class="card ${c.sev==='Critical'?'crit':''}" onclick="openDetail(${c.id})">
                 <i class="fas fa-${c.icon}"></i><b>${currentLang==='en'?c.en:c.kn}</b><span class="sev">${c.sev}</span></div>`;
@@ -213,18 +265,12 @@
         document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'ENGLISH' : 'ಕನ್ನಡ';
         document.getElementById('txt-title').innerText = currentLang === 'en' ? 'Emergency Guide' : 'ತುರ್ತು ಮಾರ್ಗದರ್ಶಿ';
         document.getElementById('txt-btn-hosp').innerText = currentLang === 'en' ? 'NEARBY HOSPITALS' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
-        document.getElementById('next-btn').innerText = currentLang === 'en' ? 'NEXT STEP' : 'ಮುಂದಿನ ಹಂತ';
-        document.getElementById('prev-btn').innerText = currentLang === 'en' ? 'PREVIOUS' : 'ಹಿಂದಿನ';
+        document.getElementById('btn-edit-profile').innerText = currentLang === 'en' ? (isEditing?'SAVE PROFILE':'EDIT PROFILE') : (isEditing?'ಉಳಿಸಿ':'ಪ್ರೊಫೈಲ್ ತಿದ್ದುಪಡಿ');
         renderGrid(cases);
         if(currentCase) updateStepUI();
     }
 
-    function openDetail(id) {
-        currentCase = cases.find(c => c.id === id);
-        currentStepIdx = 0;
-        document.getElementById('ov-details').classList.add('active');
-        updateStepUI();
-    }
+    function openDetail(id) { currentCase = cases.find(c => c.id === id); currentStepIdx = 0; document.getElementById('ov-details').classList.add('active'); updateStepUI(); }
 
     function updateStepUI() {
         const step = currentCase.steps[currentStepIdx];
@@ -232,66 +278,59 @@
         document.getElementById('det-icon').className = `fas fa-${currentCase.icon}`;
         document.getElementById('det-instr').innerText = currentLang === 'en' ? step.en : step.kn;
         document.getElementById('step-num').innerText = currentLang === 'en' ? `Step ${currentStepIdx + 1}` : `ಹಂತ ${currentStepIdx + 1}`;
-
         document.getElementById('prev-btn').style.visibility = currentStepIdx === 0 ? 'hidden' : 'visible';
-        document.getElementById('next-btn').innerText = currentStepIdx === currentCase.steps.length - 1
-            ? (currentLang === 'en' ? 'FINISH' : 'ಮುಗಿಸಿ')
-            : (currentLang === 'en' ? 'NEXT STEP' : 'ಮುಂದಿನ ಹಂತ');
-
+        document.getElementById('next-btn').innerText = currentStepIdx === currentCase.steps.length - 1 ? (currentLang==='en'?'FINISH':'ಮುಗಿಸಿ') : (currentLang==='en'?'NEXT STEP':'ಮುಂದಿನ ಹಂತ');
         stopSpeech();
     }
 
-    function nextStep() {
-        if (currentStepIdx < currentCase.steps.length - 1) {
-            currentStepIdx++;
-            updateStepUI();
-        } else {
-            closeOverlay('ov-details');
-        }
-    }
-
-    function prevStep() {
-        if (currentStepIdx > 0) {
-            currentStepIdx--;
-            updateStepUI();
-        }
-    }
+    function nextStep() { if (currentStepIdx < currentCase.steps.length - 1) { currentStepIdx++; updateStepUI(); } else { closeOverlay('ov-details'); } }
+    function prevStep() { if (currentStepIdx > 0) { currentStepIdx--; updateStepUI(); } }
 
     function toggleSpeech() {
-        if (isSpeaking) {
-            stopSpeech();
-        } else {
+        if (isSpeaking) { stopSpeech(); } else {
             const text = document.getElementById('det-instr').innerText;
             const utt = new SpeechSynthesisUtterance(text);
-            utt.lang = currentLang === 'en' ? 'en-US' : 'hi-IN'; // Kannada fallback to Hindi for better browser synthesis
+            utt.lang = currentLang === 'en' ? 'en-US' : 'hi-IN';
             utt.onend = () => { isSpeaking = false; updateSpeakBtn(); };
-            window.speechSynthesis.speak(utt);
-            isSpeaking = true;
-            updateSpeakBtn();
+            window.speechSynthesis.speak(utt); isSpeaking = true; updateSpeakBtn();
         }
     }
 
-    function stopSpeech() {
-        window.speechSynthesis.cancel();
-        isSpeaking = false;
-        updateSpeakBtn();
-    }
+    function stopSpeech() { window.speechSynthesis.cancel(); isSpeaking = false; updateSpeakBtn(); }
 
     function updateSpeakBtn() {
-        const btn = document.getElementById('speak-btn');
-        const txt = document.getElementById('speak-txt');
-        if (isSpeaking) {
-            btn.classList.add('playing');
-            txt.innerText = currentLang === 'en' ? 'STOP' : 'ನಿಲ್ಲಿಸಿ';
+        const btn = document.getElementById('speak-btn'); const txt = document.getElementById('speak-txt');
+        if (isSpeaking) { btn.classList.add('playing'); txt.innerText = currentLang === 'en' ? 'STOP' : 'ನಿಲ್ಲಿಸಿ'; }
+        else { btn.classList.remove('playing'); txt.innerText = currentLang === 'en' ? 'SPEAK NOW' : 'ಕೇಳಿ'; }
+    }
+
+    function toggleEditProfile() {
+        const fields = ['name', 'phone', 'emergency', 'blood'];
+        if (!isEditing) {
+            fields.forEach(f => {
+                const val = document.getElementById('val-'+f).innerText;
+                const input = document.getElementById('edit-'+f);
+                input.value = val; input.style.display = 'block';
+                document.getElementById('val-'+f).style.display = 'none';
+            });
+            document.getElementById('btn-edit-profile').innerText = currentLang === 'en' ? 'SAVE PROFILE' : 'ಉಳಿಸಿ';
+            isEditing = true;
         } else {
-            btn.classList.remove('playing');
-            txt.innerText = currentLang === 'en' ? 'SPEAK NOW' : 'ಕೇಳಿ';
+            fields.forEach(f => {
+                const input = document.getElementById('edit-'+f);
+                document.getElementById('val-'+f).innerText = input.value;
+                input.style.display = 'none';
+                document.getElementById('val-'+f).style.display = 'block';
+            });
+            document.getElementById('p-display-name').innerText = document.getElementById('edit-name').value;
+            document.getElementById('btn-edit-profile').innerText = currentLang === 'en' ? 'EDIT PROFILE' : 'ಪ್ರೊಫೈಲ್ ತಿದ್ದುಪಡಿ';
+            isEditing = false;
+            alert(currentLang === 'en' ? "Profile Updated!" : "ಪ್ರೊಫೈಲ್ ನವೀಕರಿಸಲಾಗಿದೆ!");
         }
     }
 
     function openHospitals() {
-        const container = document.getElementById('h-list-container');
-        container.innerHTML = '';
+        const container = document.getElementById('h-list-container'); container.innerHTML = '';
         hospitals.forEach(h => {
             container.innerHTML += `<div class="hosp-card"><h3>${h.name}</h3><p>${h.ad}</p>
                 <div class="hosp-actions"><button class="h-btn h-call" onclick="alert('Calling ${h.ph}')">CALL</button>
