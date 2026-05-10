@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pratham Chikitse - Full App Simulator</title>
+    <title>Pratham Chikitse - Full Screen Emergency App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --brand-green: #087A55;
+            --brand-green-dark: #055E42;
             --surface: #F8FAF9;
             --ink: #172026;
             --muted: #63706B;
@@ -15,295 +16,384 @@
             --white: #FFFFFF;
         }
 
+        /* RESET FOR FULL SCREEN */
+        * { box-sizing: border-box; }
         body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: #1a252f;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .phone-container {
-            width: 360px; height: 740px;
-            background: #000; border-radius: 45px;
-            padding: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            position: relative; border: 2px solid #333;
-        }
-
-        .screen {
+            margin: 0; padding: 0;
             width: 100%; height: 100%;
-            background: var(--surface); border-radius: 35px;
-            overflow: hidden; display: flex; flex-direction: column;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--surface);
+            color: var(--ink);
+            overflow: hidden; /* Prevent body scroll, use container scroll */
+        }
+
+        /* MAIN CONTAINER (THE APP) */
+        #app-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             position: relative;
+            max-width: 500px; /* Still keeps it usable on desktop, but full on mobile */
+            margin: 0 auto;
+            background: var(--surface);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        /* Nav & Header */
-        .status-bar {
-            height: 25px; padding: 5px 25px;
-            display: flex; justify-content: space-between; font-size: 12px;
-        }
-
+        /* HEADER */
         .app-header {
-            padding: 15px 20px; display: flex;
-            justify-content: space-between; align-items: center;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: var(--white);
+            border-bottom: 1px solid #eee;
         }
 
-        .app-header h1 { margin: 0; font-size: 20px; color: var(--brand-green); font-weight: 800; }
+        .app-header h1 { margin: 0; font-size: 22px; color: var(--brand-green); font-weight: 800; }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+
+        .profile-btn { font-size: 24px; color: var(--muted); cursor: pointer; }
 
         .lang-btn {
-            background: #e8f5e9; border: none; padding: 6px 12px;
+            background: #e8f5e9; border: none; padding: 8px 16px;
             border-radius: 20px; font-weight: bold; color: var(--brand-green);
-            cursor: pointer; font-size: 11px;
+            cursor: pointer; font-size: 12px;
         }
 
-        /* Dashboard */
-        .search-area { padding: 0 20px 15px; background: var(--white); }
+        /* DASHBOARD CONTENT */
+        .search-area { padding: 15px 20px; background: var(--white); }
         .search-area input {
-            width: 100%; padding: 12px 15px; border-radius: 12px;
-            border: 1px solid #eee; background: #f5f7f6; box-sizing: border-box;
+            width: 100%; padding: 14px 18px; border-radius: 15px;
+            border: 1px solid #ddd; background: #f9fbfc; font-size: 16px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .search-area input:focus { border-color: var(--brand-green); }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 20px 100px; /* Extra bottom padding for buttons */
         }
 
-        .scroll-content { flex: 1; overflow-y: auto; padding: 15px 20px; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
 
         .card {
-            background: var(--white); border-radius: 18px; padding: 20px 10px;
-            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            cursor: pointer; transition: all 0.2s; border: 1px solid #f0f0f0;
+            background: var(--white); border-radius: 20px; padding: 25px 15px;
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+            border: 1px solid #f0f0f0;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .card:hover { transform: translateY(-2px); border-color: var(--brand-green); }
+        .card:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        .card i { font-size: 32px; color: var(--brand-green); margin-bottom: 12px; display: block; }
-        .card b { font-size: 14px; color: var(--ink); }
+        .card i { font-size: 36px; color: var(--brand-green); margin-bottom: 12px; }
+        .card b { font-size: 15px; color: var(--ink); line-height: 1.2; }
         .card .sev {
-            font-size: 10px; padding: 2px 8px; border-radius: 10px;
-            background: #f0f0f0; margin-top: 8px; display: inline-block;
+            font-size: 11px; padding: 3px 10px; border-radius: 12px;
+            background: #f1f3f2; margin-top: 10px; font-weight: 600;
+            color: var(--muted);
+        }
+        .card.crit .sev { background: #fee2e2; color: var(--danger); }
+
+        /* FIXED FOOTER BUTTONS */
+        .footer-fixed {
+            position: absolute;
+            bottom: 0; width: 100%;
+            padding: 15px 20px 25px;
+            background: linear-gradient(to top, var(--surface) 80%, transparent);
+            display: flex; flex-direction: column; gap: 12px;
         }
 
-        .footer-btns { padding: 15px 20px; background: var(--white); box-shadow: 0 -5px 15px rgba(0,0,0,0.02); }
         .btn {
-            width: 100%; padding: 16px; border-radius: 15px;
-            border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 18px; border-radius: 16px;
+            border: none; font-weight: bold; cursor: pointer;
+            font-size: 16px; display: flex; align-items: center;
+            justify-content: center; gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .btn-hosp { background: var(--brand-green); color: white; }
-        .btn-sos { background: var(--danger); color: white; animation: pulse 2s infinite; }
+        .btn-sos { background: var(--danger); color: white; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Overlays */
+        /* OVERLAY SYSTEM (FULL SCREEN) */
         .overlay {
-            position: absolute; top: 0; left: 100%;
+            position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; background: var(--surface);
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100; display: flex; flex-direction: column;
+            z-index: 200; display: none; flex-direction: column;
         }
-        .overlay.active { left: 0; }
+        .overlay.active { display: flex; }
 
-        .ov-header { padding: 20px; display: flex; align-items: center; gap: 15px; background: white; }
-        .ov-header h2 { margin: 0; font-size: 18px; }
-        .back { cursor: pointer; font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .ov-header {
+            padding: 20px; display: flex; align-items: center; gap: 20px;
+            background: white; border-bottom: 1px solid #eee;
+        }
+        .ov-header h2 { margin: 0; font-size: 20px; flex: 1; }
+        .back-btn { font-size: 24px; cursor: pointer; color: var(--ink); padding: 5px; }
 
-        /* Hospital Details */
-        .hosp-item {
-            background: white; padding: 15px; border-radius: 15px;
+        /* HOSPITAL LISTING */
+        .hosp-card {
+            background: white; padding: 20px; border-radius: 20px;
             margin-bottom: 15px; border: 1px solid #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .hosp-item h3 { margin: 0; font-size: 16px; color: var(--ink); }
-        .hosp-item p { margin: 5px 0; font-size: 12px; color: var(--muted); }
-        .hosp-actions { display: flex; gap: 10px; margin-top: 12px; }
+        .hosp-card h3 { margin: 0 0 5px; font-size: 17px; }
+        .hosp-card p { margin: 0; font-size: 13px; color: var(--muted); }
+        .hosp-actions { display: flex; gap: 12px; margin-top: 15px; }
         .h-btn {
-            flex: 1; padding: 10px; border-radius: 10px; border: none;
-            font-size: 11px; font-weight: bold; cursor: pointer;
+            flex: 1; padding: 12px; border-radius: 12px; border: none;
+            font-size: 13px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .h-call { background: #E8F5E9; color: var(--brand-green); }
-        .h-nav { background: #E3F2FD; color: #1976D2; }
+        .h-call { background: #ecfdf5; color: var(--brand-green); }
+        .h-nav { background: #eff6ff; color: #1d4ed8; }
 
-        /* Step Details */
-        .step-pager { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .step-card {
-            background: white; width: 100%; border-radius: 20px;
-            padding: 30px 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        /* STEP DETAILS */
+        .step-container { padding: 30px 20px; text-align: center; flex: 1; display: flex; flex-direction: column; }
+        .instruction-card {
+            background: white; padding: 40px 25px; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); flex: 1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .do-badge { background: var(--brand-green); color: white; padding: 4px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .step-img { font-size: 80px; color: var(--brand-green); margin: 30px 0; }
+        .badge-do { background: var(--brand-green); color: white; padding: 5px 20px; border-radius: 25px; font-weight: 800; font-size: 14px; }
+        .step-icon-large { font-size: 100px; color: var(--brand-green); margin: 40px 0; }
+        .instr-text { font-size: 20px; font-weight: 500; line-height: 1.5; margin-bottom: 30px; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.98); opacity: 0.9; }
-            100% { transform: scale(1); }
+        /* PROFILE SCREEN */
+        .profile-field { background: white; padding: 15px 20px; border-radius: 15px; margin-bottom: 12px; border: 1px solid #eee; }
+        .profile-label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+        .profile-val { font-size: 16px; font-weight: 600; }
+
+        @media (max-width: 500px) {
+            #app-container { max-width: 100%; border-radius: 0; }
         }
-
-        .side-info { position: fixed; left: 40px; color: white; max-width: 300px; }
-        @media (max-width: 800px) { .side-info { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="side-info">
-        <h1 style="font-size: 32px; color: #4ade80;">Pratham Chikitse</h1>
-        <p>MindMatrix Internship Project</p>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 2;">
-            <li><i class="fas fa-check-circle"></i> Live Search Filtering</li>
-            <li><i class="fas fa-check-circle"></i> Real-time Language Swap</li>
-            <li><i class="fas fa-check-circle"></i> Functional Hospital List</li>
-            <li><i class="fas fa-check-circle"></i> Emergency Dial Simulation</li>
-        </ul>
-    </div>
+    <div id="app-container">
+        <!-- STATUS BAR MOCK -->
+        <div style="height: 24px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600;">
+            <span id="clock">12:30</span>
+            <div style="display:flex; gap: 6px;">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
 
-    <div class="phone-container">
-        <div class="screen">
-            <div class="status-bar">
-                <span>10:45</span>
-                <div>
-                    <i class="fas fa-signal"></i>
-                    <i class="fas fa-wifi"></i>
-                    <i class="fas fa-battery-full"></i>
+        <!-- MAIN DASHBOARD -->
+        <header class="app-header">
+            <h1 id="txt-title">Emergency First Aid</h1>
+            <div class="header-actions">
+                <i class="fas fa-user-circle profile-btn" onclick="openProfile()"></i>
+                <button class="lang-btn" onclick="toggleLanguage()" id="lang-btn">ENGLISH</button>
+            </div>
+        </header>
+
+        <div class="search-area">
+            <input type="text" id="search-input" placeholder="Search emergency (e.g. CPR)" onkeyup="doSearch()">
+        </div>
+
+        <div class="scroll-area">
+            <div class="grid" id="case-grid"></div>
+        </div>
+
+        <div class="footer-fixed">
+            <button class="btn btn-hosp" onclick="openHospitals()">
+                <i class="fas fa-hospital-alt"></i> <span id="txt-btn-hosp">NEARBY HOSPITALS</span>
+            </button>
+            <button class="btn btn-sos" onclick="doSOS()">
+                <i class="fas fa-phone-alt"></i> SOS - PANIC BUTTON
+            </button>
+        </div>
+
+        <!-- OVERLAY: HOSPITAL LIST -->
+        <div class="overlay" id="ov-hospitals">
+            <div class="ov-header">
+                <div class="back-btn" onclick="closeOverlay('ov-hospitals')"><i class="fas fa-arrow-left"></i></div>
+                <h2 id="txt-h-title">Nearby Hospitals</h2>
+            </div>
+            <div class="scroll-area" id="h-list-container" style="padding-top: 20px;"></div>
+        </div>
+
+        <!-- OVERLAY: DETAIL INSTRUCTIONS -->
+        <div class="overlay" id="ov-details">
+            <div class="ov-header">
+                <div class="back-btn" onclick="closeOverlay('ov-details')"><i class="fas fa-arrow-left"></i></div>
+                <h2 id="det-title">Instruction</h2>
+            </div>
+            <div class="step-container">
+                <div class="instruction-card">
+                    <span class="badge-do">DO</span>
+                    <div class="step-icon-large"><i id="det-icon" class="fas"></i></div>
+                    <p id="det-instr" class="instr-text"></p>
+                    <button class="btn" style="background: #f3f4f6; color: var(--ink); box-shadow: none;" onclick="speakInstruction()">
+                        <i class="fas fa-volume-up"></i> LISTEN GUIDE
+                    </button>
+                </div>
+                <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--brand-green);"></div>
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #ddd;"></div>
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #ddd;"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- DASHBOARD -->
-            <div class="app-header">
-                <h1 id="title">Emergency Guide</h1>
-                <button class="lang-btn" onclick="toggleLang()" id="lang-btn">ENGLISH</button>
+        <!-- OVERLAY: PROFILE -->
+        <div class="overlay" id="ov-profile">
+            <div class="ov-header">
+                <div class="back-btn" onclick="closeOverlay('ov-profile')"><i class="fas fa-arrow-left"></i></div>
+                <h2 id="txt-p-title">User Profile</h2>
             </div>
-
-            <div class="search-area">
-                <input type="text" id="search" placeholder="Search (e.g. CPR)" onkeyup="filter()">
-            </div>
-
-            <div class="scroll-content">
-                <div class="grid" id="grid"></div>
-            </div>
-
-            <div class="footer-btns">
-                <button class="btn btn-hosp" onclick="openOverlay('hospital-ov')">
-                    <i class="fas fa-hospital"></i> <span id="btn-h-text">NEARBY HOSPITALS</span>
-                </button>
-                <button class="btn btn-sos" onclick="triggerSOS()">
-                    <i class="fas fa-phone-alt"></i> SOS PANIC BUTTON
-                </button>
-            </div>
-
-            <!-- HOSPITAL OVERLAY -->
-            <div class="overlay" id="hospital-ov">
-                <div class="ov-header">
-                    <div class="back" onclick="closeOverlay('hospital-ov')"><i class="fas fa-arrow-left"></i></div>
-                    <h2 id="h-title">Nearby Hospitals</h2>
-                </div>
-                <div class="scroll-content" id="h-list"></div>
-            </div>
-
-            <!-- DETAIL OVERLAY -->
-            <div class="overlay" id="detail-ov">
-                <div class="ov-header">
-                    <div class="back" onclick="closeOverlay('detail-ov')"><i class="fas fa-arrow-left"></i></div>
-                    <h2 id="d-title">Instruction</h2>
-                </div>
-                <div class="step-pager">
-                    <div class="step-card">
-                        <span class="do-badge">DO</span>
-                        <div class="step-img"><i id="d-icon" class="fas"></i></div>
-                        <p id="d-instr" style="font-size: 18px; font-weight: 500;"></p>
-                        <button class="btn" style="background: #f0f0f0; margin-top: 20px;" onclick="speak()">
-                            <i class="fas fa-volume-up"></i> LISTEN GUIDE
-                        </button>
+            <div class="scroll-area" style="padding-top: 30px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="width: 100px; height: 100px; background: #e2e8f0; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #94a3b8;">
+                        <i class="fas fa-user"></i>
                     </div>
+                    <h3 style="margin: 0;">MindMatrix Intern</h3>
                 </div>
+
+                <div class="profile-field">
+                    <span class="profile-label">PHONE NUMBER</span>
+                    <span class="profile-val">+91 98765 43210</span>
+                </div>
+                <div class="profile-field">
+                    <span class="profile-label">EMERGENCY CONTACT</span>
+                    <span class="profile-val">108 (Ambulance)</span>
+                </div>
+                <div class="profile-field">
+                    <span class="profile-label">BLOOD GROUP</span>
+                    <span class="profile-val">O Positive (O+)</span>
+                </div>
+
+                <button class="btn" style="background: #f8fafc; color: var(--danger); border: 1px solid #fee2e2; margin-top: 20px; box-shadow: none;" onclick="alert('Logged Out')">
+                    LOGOUT
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        let lang = 'en';
-        const data = [
-            { name: "Burns", kn: "ಸುಟ್ಟ ಗಾಯ", icon: "fire", sev: "High", msg: "Stop the burning. Cool the area under running water for 20 minutes.", kn_msg: "ಸುಡುವುದನ್ನು ತಡೆಯಿರಿ. ಸುಟ್ಟ ಭಾಗವನ್ನು 20 ನಿಮಿಷಗಳ ಕಾಲ ತಣ್ಣೀರಿನಲ್ಲಿ ತಂಪಾಗಿಸಿ." },
-            { name: "Severe Bleeding", kn: "ತೀವ್ರ ರಕ್ತಸ್ರಾವ", icon: "tint", sev: "Critical", msg: "Apply firm, direct pressure on the wound using a clean cloth.", kn_msg: "ಸ್ವಚ್ಛ ಬಟ್ಟೆಯನ್ನು ಬಳಸಿ ಗಾಯದ ಮೇಲೆ ನೇರವಾಗಿ ಮತ್ತು ದೃಢವಾಗಿ ಒತ್ತಡ ಹಾಕಿ." },
-            { name: "Choking", kn: "ಉಸಿರುಕಟ್ಟುವಿಕೆ", icon: "lungs", sev: "Critical", msg: "Give 5 back blows followed by 5 abdominal thrusts.", kn_msg: "5 ಬೆನ್ನಿನ ಹೊಡೆತಗಳು ಮತ್ತು 5 ಹೊಟ್ಟೆಯ ಒತ್ತಡಗಳನ್ನು ನೀಡಿ." },
-            { name: "Fracture", kn: "ಎಲುಬು ಮುರಿತ", icon: "bone", sev: "Medium", msg: "Immobilize the area. Do not try to realign the bone.", kn_msg: "ಭಾಗವನ್ನು ಚಲಿಸದಂತೆ ಇಡಿ. ಎಲುಬನ್ನು ಸರಿಪಡಿಸಲು ಪ್ರಯತ್ನಿಸಬೇಡಿ." },
-            { name: "Cardiac Arrest", kn: "ಹೃದಯಸ್ತಂಭನ", icon: "heartbeat", sev: "Critical", msg: "Start CPR immediately. Push hard and fast in the center of the chest.", kn_msg: "ತಕ್ಷಣ ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ. ಎದೆಯ ಮಧ್ಯಭಾಗದಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ಮತ್ತು ವೇಗವಾಗಿ ಒತ್ತಿರಿ." }
+        let currentLang = 'en';
+
+        const cases = [
+            { id: 1, en: "Burns", kn: "ಸುಟ್ಟ ಗಾಯ", icon: "fire", sev: "High", msg: "Stop the burning. Cool the area under running water for at least 20 minutes.", kn_msg: "ಸುಡುವುದನ್ನು ತಡೆಯಿರಿ. ಸುಟ್ಟ ಭಾಗವನ್ನು ಕನಿಷ್ಠ 20 ನಿಮಿಷಗಳ ಕಾಲ ತಂಪಾದ ನೀರಿನಡಿ ಇಡಿ." },
+            { id: 2, en: "Severe Bleeding", kn: "ತೀವ್ರ ರಕ್ತಸ್ರಾವ", icon: "tint", sev: "Critical", msg: "Apply firm, direct pressure on the wound using a clean cloth or gauze.", kn_msg: "ಸ್ವಚ್ಛ ಬಟ್ಟೆಯನ್ನು ಬಳಸಿ ಗಾಯದ ಮೇಲೆ ನೇರವಾಗಿ ಮತ್ತು ದೃಢವಾಗಿ ಒತ್ತಡ ಹಾಕಿ." },
+            { id: 3, en: "Choking", kn: "ಉಸಿರುಕಟ್ಟುವಿಕೆ", icon: "lungs", sev: "Critical", msg: "Lean them forward and give 5 firm blows between the shoulder blades.", kn_msg: "ಅವರನ್ನು ಮುಂದೆ ಬಾಗಿಸಿ ಭುಜದ ಎಲುಬುಗಳ ಮಧ್ಯೆ 5 ಬಾರಿ ದೃಢವಾಗಿ ಹೊಡೆಯಿರಿ." },
+            { id: 4, en: "Fracture", kn: "ಎಲುಬು ಮುರಿತ", icon: "bone", sev: "Medium", msg: "Keep the injured limb in the exact position you found it. Do not move.", kn_msg: "ಗಾಯಗೊಂಡ ಭಾಗವನ್ನು ಇದ್ದ ಸ್ಥಿತಿಯಲ್ಲೇ ಇಡಿ. ಅದನ್ನು ಚಲಿಸಬೇಡಿ." },
+            { id: 5, en: "Cardiac Arrest", kn: "ಹೃದಯಸ್ತಂಭನ", icon: "heartbeat", sev: "Critical", msg: "Start CPR immediately. Push hard and fast in the center of the chest.", kn_msg: "ತಕ್ಷಣ ಸಿಪಿಆರ್ (CPR) ಪ್ರಾರಂಭಿಸಿ. ಎದೆಯ ಮಧ್ಯಭಾಗದಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ಒತ್ತಿರಿ." },
+            { id: 6, en: "Seizure", kn: "ಅಪಸ್ಮಾರ", icon: "brain", sev: "High", msg: "Protect the head and time the seizure. Do not restrain movements.", kn_msg: "ತಲೆಗೆ ರಕ್ಷಣೆ ನೀಡಿ ಮತ್ತು ಸಮಯ ಗಮನಿಸಿ. ಬಲವಂತವಾಗಿ ಹಿಡಿಯಬೇಡಿ." }
         ];
 
         const hospitals = [
-            { name: "Sarji Hospital", ph: "08182-405505", ad: "R.M.R. Road, Shivamogga" },
-            { name: "Max Hospital", ph: "08182-269400", ad: "Durgigudi, Shivamogga" },
-            { name: "Metro Hospital", ph: "078292-90303", ad: "Savalanga Road, Shivamogga" },
-            { name: "Govt. Meggan Hospital", ph: "08182-271566", ad: "Sagar Road, Shivamogga" }
+            { name: "Sarji Hospital", ph: "08182-405505", ad: "R.M.R. Road, Park Extension, Shivamogga" },
+            { name: "Max Hospital (MaAx)", ph: "08182-269400", ad: "RMR Road, Durgigudi, Shivamogga" },
+            { name: "Metro Hospital", ph: "078292-90303", ad: "Savalanga Road, Jayanagar, Shivamogga" },
+            { name: "Govt. Meggan Hospital", ph: "08182-271566", ad: "Sagar Road, Shivamogga" },
+            { name: "City Hospital", ph: "08182-279137", ad: "R.M.R. Road, Durgigudi, Shivamogga" }
         ];
 
-        function toggleLang() {
-            lang = lang === 'en' ? 'kn' : 'en';
-            document.getElementById('lang-btn').innerText = lang === 'en' ? 'ENGLISH' : 'ಕನ್ನಡ';
-            document.getElementById('title').innerText = lang === 'en' ? 'Emergency Guide' : 'ತುರ್ತು ಮಾರ್ಗದರ್ಶಿ';
-            document.getElementById('btn-h-text').innerText = lang === 'en' ? 'NEARBY HOSPITALS' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
-            document.getElementById('h-title').innerText = lang === 'en' ? 'Nearby Hospitals' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
-            render();
+        function init() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderGrid(cases);
         }
 
-        function render(items = data) {
-            const grid = document.getElementById('grid');
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+        }
+
+        function renderGrid(items) {
+            const grid = document.getElementById('case-grid');
             grid.innerHTML = '';
-            items.forEach(item => {
+            items.forEach(c => {
+                const name = currentLang === 'en' ? c.en : c.kn;
+                const critClass = c.sev === 'Critical' ? 'crit' : '';
                 grid.innerHTML += `
-                    <div class="card" onclick="showDetail('${item.name}')">
-                        <i class="fas fa-${item.icon}"></i>
-                        <b>${lang === 'en' ? item.name : item.kn}</b><br>
-                        <span class="sev" style="${item.sev==='Critical'?'color:red':''}">${item.sev}</span>
+                    <div class="card ${critClass}" onclick="openDetail(${c.id})">
+                        <i class="fas fa-${c.icon}"></i>
+                        <b>${name}</b>
+                        <span class="sev">${c.sev}</span>
                     </div>
                 `;
             });
         }
 
-        function filter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const filtered = data.filter(i => i.name.toLowerCase().includes(q) || i.kn.includes(q));
-            render(filtered);
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'kn' : 'en';
+            document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'ENGLISH' : 'ಕನ್ನಡ';
+            document.getElementById('txt-title').innerText = currentLang === 'en' ? 'Emergency First Aid' : 'ತುರ್ತು ಪ್ರಥಮ ಚಿಕಿತ್ಸೆ';
+            document.getElementById('txt-btn-hosp').innerText = currentLang === 'en' ? 'NEARBY HOSPITALS' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
+            document.getElementById('txt-h-title').innerText = currentLang === 'en' ? 'Nearby Hospitals' : 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು';
+            document.getElementById('txt-p-title').innerText = currentLang === 'en' ? 'User Profile' : 'ಬಳಕೆದಾರರ ಪ್ರೊಫೈಲ್';
+            document.getElementById('search-input').placeholder = currentLang === 'en' ? 'Search emergency (e.g. CPR)' : 'ಹುಡುಕಿ (ಉದಾ: ಸಿಪಿಆರ್)';
+            renderGrid(cases);
         }
 
-        function showDetail(name) {
-            const item = data.find(i => i.name === name);
-            document.getElementById('d-title').innerText = lang === 'en' ? item.name : item.kn;
-            document.getElementById('d-icon').className = `fas fa-${item.icon}`;
-            document.getElementById('d-instr').innerText = lang === 'en' ? item.msg : item.kn_msg;
-            openOverlay('detail-ov');
+        function doSearch() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const filtered = cases.filter(c => c.en.toLowerCase().includes(q) || c.kn.includes(q));
+            renderGrid(filtered);
         }
 
-        function triggerSOS() {
-            const num = "108";
-            if(confirm(`EMERGENCY: Do you want to call ${num} and send location to emergency contacts?`)) {
-                alert("Location Shared Successfully! Dialing 108...");
-            }
+        function openDetail(id) {
+            const c = cases.find(x => x.id === id);
+            document.getElementById('det-title').innerText = currentLang === 'en' ? c.en : c.kn;
+            document.getElementById('det-icon').className = `fas fa-${c.icon}`;
+            document.getElementById('det-instr').innerText = currentLang === 'en' ? c.msg : c.kn_msg;
+            document.getElementById('ov-details').classList.add('active');
         }
 
-        function openOverlay(id) {
-            if(id === 'hospital-ov') {
-                const list = document.getElementById('h-list');
-                list.innerHTML = '';
-                hospitals.forEach(h => {
-                    list.innerHTML += `
-                        <div class="hosp-item">
-                            <h3>${h.name}</h3>
-                            <p>${h.ad}</p>
-                            <div class="hosp-actions">
-                                <button class="h-btn h-call" onclick="alert('Calling ${h.ph}')">CALL ${h.ph}</button>
-                                <button class="h-btn h-nav" onclick="alert('Navigating to ${h.name}')">NAVIGATE</button>
-                            </div>
+        function openHospitals() {
+            const container = document.getElementById('h-list-container');
+            container.innerHTML = '';
+            hospitals.forEach(h => {
+                container.innerHTML += `
+                    <div class="hosp-card">
+                        <h3>${h.name}</h3>
+                        <p>${h.ad}</p>
+                        <div class="hosp-actions">
+                            <button class="h-btn h-call" onclick="alert('Simulating Call to ${h.ph}')">
+                                <i class="fas fa-phone-alt"></i> ${currentLang === 'en' ? 'CALL' : 'ಕರೆ ಮಾಡಿ'}
+                            </button>
+                            <button class="h-btn h-nav" onclick="alert('Opening Google Maps to ${h.name}')">
+                                <i class="fas fa-location-arrow"></i> ${currentLang === 'en' ? 'NAVIGATE' : 'ಮಾರ್ಗ'}
+                            </button>
                         </div>
-                    `;
-                });
-            }
-            document.getElementById(id).classList.add('active');
+                    </div>
+                `;
+            });
+            document.getElementById('ov-hospitals').classList.add('active');
         }
+
+        function openProfile() { document.getElementById('ov-profile').classList.add('active'); }
         function closeOverlay(id) { document.getElementById(id).classList.remove('active'); }
 
-        function speak() {
-            const text = document.getElementById('d-instr').innerText;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang === 'en' ? 'en-US' : 'hi-IN'; // Kannada browser support varies, falling back to Hindi for rhythm or English
-            window.speechSynthesis.speak(utterance);
+        function doSOS() {
+            const confirmMsg = currentLang === 'en'
+                ? "EMERGENCY: Do you want to call 108 and broadcast your GPS location?"
+                : "ತುರ್ತು: ನೀವು 108 ಗೆ ಕರೆ ಮಾಡಲು ಮತ್ತು ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವಿರಾ?";
+
+            if(confirm(confirmMsg)) {
+                alert(currentLang === 'en' ? "Location Shared! Calling 108..." : "ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ! 108 ಗೆ ಕರೆ ಮಾಡಲಾಗುತ್ತಿದೆ...");
+            }
         }
 
-        render();
+        function speakInstruction() {
+            const text = document.getElementById('det-instr').innerText;
+            const utt = new SpeechSynthesisUtterance(text);
+            utt.lang = currentLang === 'en' ? 'en-US' : 'hi-IN';
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utt);
+        }
+
+        init();
     </script>
 </body>
 </html>
