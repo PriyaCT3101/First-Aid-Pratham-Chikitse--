@@ -1,0 +1,13 @@
+<resources>
+    <color name="ic_launcher_background">#0F766E</color>
+    <color name="brand_green">#087A55</color>
+    <color name="brand_green_dark">#055E42</color>
+    <color name="surface_soft">#F8FAF9</color>
+    <color name="ink">#172026</color>
+    <color name="muted">#63706B</color>
+    <color name="danger">#B3261E</color>
+    <color name="warning">#A05A00</color>
+    <color name="card_stroke">#D7E1DD</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

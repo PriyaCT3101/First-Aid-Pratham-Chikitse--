@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme.PrathamChikitse" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#F8FAF9</item>
+        <item name="android:navigationBarColor">#F8FAF9</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#087A55</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.PrathamChikitse</item>
+    </style>
+</resources>

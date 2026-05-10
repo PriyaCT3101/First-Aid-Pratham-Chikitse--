@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Pratham Chikitse</string>
+    <string name="auth_title">Pratham Chikitse</string>
+    <string name="auth_subtitle">Offline emergency guidance in English and Kannada</string>
+    <string name="phone_hint">Phone number</string>
+    <string name="otp_hint">Enter OTP</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="verify_access">Verify access</string>
+    <string name="dashboard_title">Emergency First Aid</string>
+    <string name="hospitals">Nearby hospitals</string>
+    <string name="speak">Speak</string>
+</resources>
